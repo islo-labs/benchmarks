@@ -26,6 +26,18 @@ Each benchmark creates a fresh sandbox, runs `echo "benchmark"`, and records wal
 
 <br>
 
+## Evaluate ISLO.dev
+
+Set `ISLO_API_URL` and `ISLO_BEARER_TOKEN` in `.env` (see `env.example`), then run:
+
+```bash
+npm run bench:islo -- --iterations 5
+```
+
+If the token is operator/admin scoped, set `ISLO_PUBLIC_TENANT_ID` (and optionally `ISLO_PUBLIC_USER_ID`) to scope requests to a tenant.
+
+<br>
+
 ## Transparency
 
 - 📖 **Open source** — All benchmark code is public
