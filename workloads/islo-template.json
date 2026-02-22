@@ -1,0 +1,5 @@
+{
+  "name": "islo-python-template",
+  "command": "python -c \"import hashlib,pathlib; p=pathlib.Path('/tmp/islo-template.bin'); p.write_bytes(b'x'*2000000); print(hashlib.sha256(p.read_bytes()).hexdigest()[:16])\"",
+  "timeoutMs": 120000
+}

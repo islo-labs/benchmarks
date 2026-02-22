@@ -1,0 +1,97 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-02-22T11:44:17.584Z",
+  "environment": {
+    "node": "v25.2.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "config": {
+    "iterations": 10,
+    "timeoutMs": 120000,
+    "providerFilter": "islo",
+    "workload": {
+      "name": "islo-python-cpu-io",
+      "hasSetupCommand": false,
+      "hasWorkloadCommand": true,
+      "timeoutMs": 120000
+    }
+  },
+  "results": [
+    {
+      "provider": "islo",
+      "iterations": [
+        {
+          "ttiMs": 1721.84,
+          "workloadMs": 472.13,
+          "totalMs": 2193.97
+        },
+        {
+          "ttiMs": 1109.64,
+          "workloadMs": 487.96,
+          "totalMs": 1597.61
+        },
+        {
+          "ttiMs": 1044.24,
+          "workloadMs": 480.19,
+          "totalMs": 1524.44
+        },
+        {
+          "ttiMs": 1077.68,
+          "workloadMs": 488.76,
+          "totalMs": 1566.44
+        },
+        {
+          "ttiMs": 1036.42,
+          "workloadMs": 529.06,
+          "totalMs": 1565.48
+        },
+        {
+          "ttiMs": 1034.49,
+          "workloadMs": 474.69,
+          "totalMs": 1509.18
+        },
+        {
+          "ttiMs": 1059.53,
+          "workloadMs": 452.93,
+          "totalMs": 1512.47
+        },
+        {
+          "ttiMs": 1017.69,
+          "workloadMs": 482.45,
+          "totalMs": 1500.15
+        },
+        {
+          "ttiMs": 1050.21,
+          "workloadMs": 468.8,
+          "totalMs": 1519.01
+        },
+        {
+          "ttiMs": 1043.35,
+          "workloadMs": 467.63,
+          "totalMs": 1511.01
+        }
+      ],
+      "summary": {
+        "ttiMs": {
+          "min": 1017.69,
+          "max": 1721.84,
+          "median": 1047.22,
+          "avg": 1119.51
+        },
+        "workloadMs": {
+          "min": 452.93,
+          "max": 529.06,
+          "median": 477.44,
+          "avg": 480.46
+        },
+        "totalMs": {
+          "min": 1500.15,
+          "max": 2193.97,
+          "median": 1521.73,
+          "avg": 1599.97
+        }
+      }
+    }
+  ]
+}

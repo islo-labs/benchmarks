@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-02-22T09:49:49.943Z",
+  "environment": {
+    "node": "v25.2.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "config": {
+    "iterations": 3,
+    "timeoutMs": 120000,
+    "providerFilter": "islo"
+  },
+  "results": [
+    {
+      "provider": "islo",
+      "iterations": [
+        {
+          "ttiMs": 1917.58
+        },
+        {
+          "ttiMs": 1058.84
+        },
+        {
+          "ttiMs": 1062.74
+        }
+      ],
+      "summary": {
+        "ttiMs": {
+          "min": 1058.84,
+          "max": 1917.58,
+          "median": 1062.74,
+          "avg": 1346.39
+        }
+      }
+    }
+  ]
+}

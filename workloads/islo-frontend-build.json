@@ -1,0 +1,5 @@
+{
+  "name": "islo-python-cpu-io",
+  "command": "python -c \"import hashlib,pathlib; p=pathlib.Path('/tmp/islo-workload.bin'); p.write_bytes(b'x'*5000000); digest=hashlib.sha256(p.read_bytes()).hexdigest(); print(digest[:16])\"",
+  "timeoutMs": 120000
+}
