@@ -215,10 +215,13 @@ Reproduce our results:
 git clone https://github.com/computesdk/benchmarks.git
 cd benchmarks
 npm install
-cp env.example .env  # Add your API keys
+cp .env.example .env  # Add your API keys
 
 # Run with same settings as CI
 npm run bench:direct -- --iterations 10
+
+# Run a validation matrix (multiple iteration sets)
+npm run bench:matrix -- --iterations-list 5,10,25
 ```
 
 **Note**: Your results will differ based on your network location and conditions.

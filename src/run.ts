@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { runBenchmark } from './benchmark.js';
 import { printResultsTable, writeResultsJson } from './table.js';
 import { providers } from './providers.js';
-import type { BenchmarkResult } from './types.js';
+import type { BenchmarkResult, RunMetadata } from './types.js';
 
 // Load .env from the benchmarking root
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -14,6 +14,7 @@ config({ path: path.resolve(__dirname, '../.env') });
 const args = process.argv.slice(2);
 const providerFilter = getArgValue(args, '--provider');
 const iterations = parseInt(getArgValue(args, '--iterations') || '10', 10);
+const runId = getArgValue(args, '--run-id') || `bench-${Date.now()}`;
 
 function getArgValue(args: string[], flag: string): string | undefined {
   const idx = args.indexOf(flag);
@@ -22,6 +23,7 @@ function getArgValue(args: string[], flag: string): string | undefined {
 
 async function main() {
   console.log('ComputeSDK Sandbox Provider Benchmarks');
+  console.log(`Run ID: ${runId}`);
   console.log(`Iterations per provider: ${iterations}`);
   console.log(`Date: ${new Date().toISOString()}\n`);
 
@@ -40,7 +42,7 @@ async function main() {
 
   // Run benchmarks sequentially to avoid resource contention
   for (const providerConfig of toRun) {
-    const result = await runBenchmark({ ...providerConfig, iterations });
+    const result = await runBenchmark({ ...providerConfig, iterations, runId });
     results.push(result);
   }
 
@@ -50,7 +52,14 @@ async function main() {
   // Write JSON results
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const outPath = path.resolve(__dirname, `../results/${timestamp}.json`);
-  await writeResultsJson(results, outPath);
+  const metadata: RunMetadata = {
+    runId,
+    mode: 'single',
+    providerFilter,
+    iterations,
+    timeoutMs: 120_000,
+  };
+  await writeResultsJson(results, outPath, metadata);
 }
 
 main().catch(err => {

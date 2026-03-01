@@ -1,5 +1,10 @@
 import type { ProviderConfig, BenchmarkResult, TimingResult, Stats } from './types.js';
 
+function buildIterationRequestId(runId: string | undefined, provider: string, iteration: number): string {
+  const seed = runId ?? 'run';
+  return `${seed}-${provider}-${iteration + 1}`;
+}
+
 function computeStats(values: number[]): Stats {
   if (values.length === 0) return { min: 0, max: 0, median: 0, avg: 0 };
 
@@ -18,13 +23,14 @@ function computeStats(values: number[]): Stats {
 }
 
 export async function runBenchmark(config: ProviderConfig): Promise<BenchmarkResult> {
-  const { name, iterations = 10, timeout = 120_000, requiredEnvVars } = config;
+  const { name, runId, iterations = 10, timeout = 120_000, requiredEnvVars } = config;
 
   // Check if all required credentials are available
   const missingVars = requiredEnvVars.filter(v => !process.env[v]);
   if (missingVars.length > 0) {
     return {
       provider: name,
+      runId,
       iterations: [],
       summary: { ttiMs: { min: 0, max: 0, median: 0, avg: 0 } },
       skipped: true,
@@ -39,15 +45,17 @@ export async function runBenchmark(config: ProviderConfig): Promise<BenchmarkRes
 
   for (let i = 0; i < iterations; i++) {
     console.log(`  Iteration ${i + 1}/${iterations}...`);
+    const iterationRequestId = buildIterationRequestId(runId, name, i);
+    const startedAt = new Date().toISOString();
 
     try {
-      const iterationResult = await runIteration(compute, timeout);
+      const iterationResult = await runIteration(compute, timeout, iterationRequestId);
       results.push(iterationResult);
       console.log(`    TTI: ${(iterationResult.ttiMs / 1000).toFixed(2)}s`);
     } catch (err) {
       const error = err instanceof Error ? err.message : String(err);
       console.log(`    FAILED: ${error}`);
-      results.push({ ttiMs: 0, error });
+      results.push({ ttiMs: 0, requestId: iterationRequestId, startedAt, error });
     }
   }
 
@@ -57,6 +65,7 @@ export async function runBenchmark(config: ProviderConfig): Promise<BenchmarkRes
   if (successful.length === 0) {
     return {
       provider: name,
+      runId,
       iterations: results,
       summary: { ttiMs: { min: 0, max: 0, median: 0, avg: 0 } },
       skipped: true,
@@ -66,6 +75,7 @@ export async function runBenchmark(config: ProviderConfig): Promise<BenchmarkRes
 
   return {
     provider: name,
+    runId,
     iterations: results,
     summary: {
       ttiMs: computeStats(successful.map(r => r.ttiMs)),
@@ -73,8 +83,9 @@ export async function runBenchmark(config: ProviderConfig): Promise<BenchmarkRes
   };
 }
 
-async function runIteration(compute: any, timeout: number): Promise<TimingResult> {
+async function runIteration(compute: any, timeout: number, requestId: string): Promise<TimingResult> {
   let sandbox: any = null;
+  const startedAt = new Date().toISOString();
 
   try {
     const start = performance.now();
@@ -89,7 +100,7 @@ async function runIteration(compute: any, timeout: number): Promise<TimingResult
 
     const ttiMs = performance.now() - start;
 
-    return { ttiMs };
+    return { ttiMs, requestId, startedAt };
   } finally {
     if (sandbox) {
       try {

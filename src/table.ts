@@ -1,4 +1,4 @@
-import type { BenchmarkResult } from './types.js';
+import type { BenchmarkResult, RunMetadata } from './types.js';
 
 /**
  * Print a comparison table of benchmark results to stdout
@@ -82,15 +82,22 @@ function round(n: number): number {
 /**
  * Write results to a JSON file with clean formatting
  */
-export async function writeResultsJson(results: BenchmarkResult[], outPath: string): Promise<void> {
+export async function writeResultsJson(
+  results: BenchmarkResult[],
+  outPath: string,
+  metadata?: RunMetadata
+): Promise<void> {
   const fs = await import('fs');
   const os = await import('os');
 
   // Clean up floating point noise in results
   const cleanResults = results.map(r => ({
     provider: r.provider,
+    ...(r.runId ? { runId: r.runId } : {}),
     iterations: r.iterations.map(i => ({
       ttiMs: round(i.ttiMs),
+      ...(i.requestId ? { requestId: i.requestId } : {}),
+      ...(i.startedAt ? { startedAt: i.startedAt } : {}),
       ...(i.error ? { error: i.error } : {}),
     })),
     summary: {
@@ -113,8 +120,11 @@ export async function writeResultsJson(results: BenchmarkResult[], outPath: stri
       arch: os.arch(),
     },
     config: {
-      iterations: results[0]?.iterations.length || 0,
-      timeoutMs: 120000,
+      iterations: metadata?.iterations ?? (results[0]?.iterations.length || 0),
+      timeoutMs: metadata?.timeoutMs ?? 120000,
+      ...(metadata?.providerFilter ? { providerFilter: metadata.providerFilter } : {}),
+      ...(metadata?.runId ? { runId: metadata.runId } : {}),
+      ...(metadata?.mode ? { mode: metadata.mode } : {}),
     },
     results: cleanResults,
   };

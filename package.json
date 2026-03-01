@@ -13,8 +13,11 @@
     "bench:railway": "tsx src/run.ts --provider railway",
     "bench:namespace": "tsx src/run.ts --provider namespace",
     "bench:render": "tsx src/run.ts --provider render",
+    "bench:matrix": "tsx src/run-matrix.ts",
     "update-readme": "tsx src/update-readme.ts",
-    "generate-svg": "tsx src/generate-svg.ts"
+    "generate-svg": "tsx src/generate-svg.ts",
+    "typecheck": "tsc --noEmit",
+    "ci": "npm run typecheck"
   },
   "dependencies": {
     "@computesdk/blaxel": "^1.5.7",

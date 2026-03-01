@@ -35,7 +35,7 @@ export const yourProvider: DirectBenchmarkConfig = {
 
 2. Add to the providers array in `src/direct-run.ts`
 
-3. Update `env.example` with required environment variables
+3. Update `.env.example` with required environment variables
 
 4. Submit a PR with:
    - The code changes
@@ -76,7 +76,7 @@ Documentation improvements are always welcome. No issue required for typos, clar
 git clone https://github.com/computesdk/benchmarks.git
 cd benchmarks
 npm install
-cp env.example .env
+cp .env.example .env
 ```
 
 ### Running Tests Locally
@@ -90,6 +90,9 @@ npm run bench:direct:e2b
 
 # Run with custom iterations
 npm run bench:direct -- --iterations 5
+
+# Run validation matrix across multiple iteration sets
+npm run bench:matrix -- --iterations-list 5,10,25
 ```
 
 ### Code Style

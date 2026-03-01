@@ -1,0 +1,58 @@
+name: Validation Matrix
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations_list:
+        description: "Comma-separated iterations list (e.g. 5,10,25)"
+        required: false
+        default: "5,10,25"
+      provider:
+        description: "Optional single provider filter"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  matrix:
+    name: Run validation matrix
+    runs-on: namespace-profile-default
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Run matrix benchmarks
+        env:
+          COMPUTESDK_API_KEY: ${{ secrets.COMPUTESDK_API_KEY }}
+          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          BL_API_KEY: ${{ secrets.BL_API_KEY }}
+          BL_WORKSPACE: ${{ secrets.BL_WORKSPACE }}
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          DAYTONA_API_KEY: ${{ secrets.DAYTONA_API_KEY }}
+          RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}
+          NSC_TOKEN: ${{ secrets.NSC_TOKEN }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_OWNER_ID: ${{ secrets.RENDER_OWNER_ID }}
+        run: |
+          provider_arg=""
+          if [[ -n "${{ github.event.inputs.provider }}" ]]; then
+            provider_arg="--provider ${{ github.event.inputs.provider }}"
+          fi
+          npm run bench:matrix -- --iterations-list "${{ github.event.inputs.iterations_list }}" $provider_arg
+      - name: Upload matrix artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-matrix-results
+          path: results/*.json
